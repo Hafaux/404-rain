@@ -1,5 +1,11 @@
-# ⚙ GSAP Boilerplate
-This project is used as a boilerplate for tasks in the "GSAP" course in Booost. It initializes a base application with a webpack dev server.
+# 🚫 404 Rain
+![](https://faust.s-ul.eu/ZcSkQrnS)
+
+The '404 Rain' Bounty Pass task at www.booost.bg.
+
+This project implements an interactive 3D 404 error page using [babylon.js](https://www.babylonjs.com/). 
+
+[<img src="https://img.shields.io/badge/ooo-zdr-yellow">](https://booost.bg/)
 
 Includes:
 * 📦 Bundling via Webpack

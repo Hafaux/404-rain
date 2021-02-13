@@ -27,6 +27,9 @@
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
+    "@babylonjs/core": "^4.2.0",
+    "@babylonjs/inspector": "^4.2.0",
+    "@babylonjs/loaders": "^4.2.0",
     "eslint": "^6.8.0",
     "eventemitter3": "^4.0.7",
     "gsap": "^3.5.1"
