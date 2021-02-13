@@ -18,6 +18,7 @@ import {
   DefaultRenderingPipeline,
 } from '@babylonjs/core';
 import { delay } from '../utils';
+import config from '../../config';
 
 /**
  * Class representing the 404 error page babylon.js scene
@@ -51,7 +52,7 @@ export default class ErrorPageScene {
   _init() {
     this._appendCanvas();
 
-    const gravityVector = new Vector3(0, -9.81, 0);
+    const gravityVector = new Vector3(0, config.gravity, 0);
 
     this.scene.enablePhysics(gravityVector);
     this.scene.clearColor = new Color3.Black();
@@ -62,16 +63,26 @@ export default class ErrorPageScene {
     this._addPipeline();
     this._addLights();
     this._addGround();
-    this._add404Text();
     this._addListeners();
+    this._add404Text().then(this._onTextLoad.bind(this));
 
     this._glitchEffect();
-    setInterval(this._glitchEffect.bind(this), 7000);
+    setInterval(this._glitchEffect.bind(this), config.glitchInterval);
 
     this.engine.resize();
     this.engine.runRenderLoop(() => {
       this.scene.render();
     });
+  }
+
+  /**
+   * Drops Os after the 404 text loads.
+   * @private
+   */
+  _onTextLoad() {
+    setTimeout(() => {
+      this._dropOs();
+    }, 1000);
   }
 
   /**
@@ -91,7 +102,7 @@ export default class ErrorPageScene {
    * @private
    */
   _addListeners() {
-    this.container.addEventListener('click', this._handleClick.bind(this));
+    this.container.addEventListener('click', this._dropOs.bind(this));
 
     window.addEventListener('resize', () => {
       this.engine.resize();
@@ -101,17 +112,19 @@ export default class ErrorPageScene {
   /**
    * Drop Os when the user clicks
    * @private
+   * @return {Promise}
    */
-  async _handleClick() {
-    for (let i = 0, x = -0.4; i < 3; i++, x += 0.4) {
+  async _dropOs() {
+    for (let i = 0, x = -0.4; i < config.numberOfOs; i++, x += 0.4) {
       this._addO(x);
-      await delay(200);
+      await delay(config.oDelay);
     }
   }
 
   /**
    * Adds an o-model to the scene
    * @private
+   * @return {Promise}
    */
   async _addO(x) {
     const { meshes: [, mesh] } = await SceneLoader.ImportMeshAsync(null, '../assets/', 'o.glb', this.scene);
@@ -129,18 +142,19 @@ export default class ErrorPageScene {
 
     setTimeout(() => {
       oMesh.dispose();
-    }, 20000);
+    }, config.oDisposeDelay);
   }
 
   /**
    * @private
+   * @return {Promise}
    */
   async _glitchEffect() {
-    gsap.to(this.pipeline.grain, { intensity: 100, animated: 100, duration: 0.1, ease: 'power2.in' });
-    await gsap.to(this.pipeline.chromaticAberration, { aberrationAmount: 50, duration: 0.1, ease: 'power2.in' });
+    gsap.to(this.pipeline.grain, { intensity: config.grainIntensity, animated: 100, duration: 0.1, ease: 'power2.in' });
+    await gsap.to(this.pipeline.chromaticAberration, { aberrationAmount: config.chromaticAberrationAmount, duration: 0.1 });
 
-    gsap.to(this.pipeline.grain, { intensity: 0, animated: 0, duration: 0.5 });
-    gsap.to(this.pipeline.chromaticAberration, { aberrationAmount: 2, duration: 0.5 });
+    gsap.to(this.pipeline.grain, { intensity: 0, animated: 0, duration: config.glitchDuration });
+    gsap.to(this.pipeline.chromaticAberration, { aberrationAmount: 0, duration: config.glitchDuration });
   }
 
   /**
@@ -167,7 +181,7 @@ export default class ErrorPageScene {
    * @private
    */
   _addGround() {
-    const ground = MeshBuilder.CreateBox('plane', { width: 20, height: 4 }, this.scene);
+    const ground = MeshBuilder.CreateBox('ground', { width: 20, height: 4 }, this.scene);
 
     ground.position.y = -0.5;
     ground.material = this.materials.yellow;
@@ -181,7 +195,7 @@ export default class ErrorPageScene {
    * @private
    */
   _addPipeline() {
-    this.pipeline = new DefaultRenderingPipeline('defaultPipeline', true, this.scene, [this.camera]);
+    this.pipeline = new DefaultRenderingPipeline('default-pipeline', true, this.scene, [this.camera]);
     this.pipeline.samples = 4;
     this.pipeline.grainEnabled = true;
     this.pipeline.chromaticAberrationEnabled = true;
@@ -190,9 +204,10 @@ export default class ErrorPageScene {
   /**
    * Loads the 404 text model and adds a collision box around it.
    * @private
+   * @return {Promise}
    */
   async _add404Text() {
-    const boundingBox = MeshBuilder.CreateBox('sphere', { width: 1.1, height: 1.05, depth: 0.2 }, this.scene);
+    const boundingBox = MeshBuilder.CreateBox('bounding-box', { width: 1.1, height: 1.05, depth: 0.2 }, this.scene);
 
     boundingBox.position.z = 0.1;
     boundingBox.position.x = 0.1;

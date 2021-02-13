@@ -4,29 +4,6 @@ import '@babylonjs/core/Debug/debugLayer';
 import '@babylonjs/inspector';
 import '@babylonjs/loaders/glTF';
 import ErrorPageScene from './custom/ErrorPageScene';
-// import {
-//   Mesh,
-//   Color3,
-//   FreeCamera,
-//   Engine,
-//   Scene,
-//   SceneLoader,
-//   StandardMaterial,
-//   UniversalCamera,
-//   Vector3,
-//   DirectionalLight,
-//   HemisphericLight,
-//   MeshBuilder,
-//   Vector2,
-//   ShadowGenerator,
-//   SpotLight,
-//   PhysicsImpostor,
-//   CannonJSPlugin,
-//   OimoJSPlugin,
-//   DefaultRenderingPipeline,
-// } from '@babylonjs/core';
-// import gsap from 'gsap/gsap-core';
-// import { delay } from './utils';
 
 const EVENTS = {
   APP_READY: 'app_ready',
@@ -60,7 +37,6 @@ export default class Application extends EventEmitter {
    */
   async init() {
     // Initiate classes and wait for async operations here.
-
     const errorPageScene = new ErrorPageScene(this.container);
 
     this.data.errorPageScene = errorPageScene;
